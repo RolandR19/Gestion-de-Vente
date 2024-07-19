@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application de Gestion de Vente</title>
+    <meta name="description" content="Une application web de gestion de vente permettant de gérer les produits, de générer des factures et de suivre les ventes.">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #343a40;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+        }
+        h1, h3, h4 {
+            text-align: center;
+            color: #000000;
+        }
+        .quantity-input {
+            width: 70px;
+        }
+        .navbar-dark {
+            background-color: #343a40;
+        }
+        .navbar-dark .navbar-nav .nav-link {
+            color: #ffffff;
+        }
+        .navbar-dark .navbar-nav .nav-link:hover {
+            color: #ffcc80;
+        }
+        #cart {
+            color: #320d0d;
+        }
+        #total {
+            color: #28a745;
+        }
+        #cancel {
+            background-color: #ffffff;
+            color: #dc3545;
+            border-color: #dc3545;
+        }
+        #cancel:hover {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        #checkout {
+            background-color: #28a745;
+            color: #ffffff;
+            border-color: #28a745;
+        }
+        #checkout:hover {
+            background-color: #218838;
+            color: #ffffff;
+        }
+        .dark-mode {
+            background-color: #343a40;
+            color: #ffffff;
+        }
+        .form-group label {
+            font-weight: bold;
+        }
+        .add-to-cart {
+            background-color: #007bff;
+            color: #701f1f;
+            border-color: #007bff;
+        }
+        .add-to-cart:hover {
+            background-color: #0056b3;
+            color: #231616;
+        }
+    </style>
+</head>
+<body class="dark-mode">
+
+    <!-- Main Container -->
+    <div class="container mt-5">
+        <!-- Page Content -->
+        <div class="container">
+            <h1 class="my-4 text-center">
+                <span style="font-size: 1em; color: #28a745;">FACTURE</span>
+            </h1>
+
+            <div class="row">
+                <!-- Product Form -->
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <h3 style="color: #28a745; font-weight: bold;">Produits Disponibles</h3>
+                    </div>
+                    <br><br>
+                    <div class="form-group">
+                        <label for="companyName">Nom de l'Entreprise:</label>
+                        <input type="text" id="companyName" class="form-control" placeholder="Entrez le nom de l'entreprise">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyEmail">Adresse Email:</label>
+                        <input type="email" id="companyEmail" class="form-control" placeholder="Entrez l'adresse email de l'entreprise">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyPhone">Numéro de Portable:</label>
+                        <input type="text" id="companyPhone" class="form-control" placeholder="Entrez le numéro de portable de l'entreprise">
+                    </div>
+                    <div class="form-group">
+                        <label for="companyVAT">Numéro de TVA:</label>
+                        <input type="text" id="companyVAT" class="form-control" placeholder="Entrez le numéro de TVA de l'entreprise">
+                    </div>
+                    <div class="form-group">
+                        <label for="invoiceNumber">Numéro de Facture:</label>
+                        <input type="text" id="invoiceNumber" class="form-control" placeholder="Entrez le numéro de facture">
+                    </div>
+                    <div class="form-group">
+                        <label for="taxFree">Détaxe:</label>
+                        <input type="text" id="taxFree" class="form-control" placeholder="Entrez la détaxe si applicable">
+                    </div>
+                    <div class="form-group">
+                        <label for="buyerCompany">Nom de l'Entreprise Acheteur:</label>
+                        <input type="text" id="buyerCompany" class="form-control" placeholder="Entrez le nom de l'entreprise acheteur">
+                    </div>
+                    <div class="form-group">
+                        <label for="productName">Nom du Produit:</label>
+                        <input type="text" id="productName" class="form-control" placeholder="Entrez le nom du produit">
+                    </div>
+                    <div class="form-group">
+                        <label for="productPrice">Prix du Produit:</label>
+                        <input type="number" id="productPrice" class="form-control" placeholder="Entrez le prix du produit">
+                    </div>
+                    <div class="form-group">
+                        <label for="productQuantity">Quantité:</label>
+                        <input type="number" id="productQuantity" class="form-control quantity-input" placeholder="Entrez la quantité" min="1" value="1">
+                    </div>
+                    <button class="btn btn-primary add-to-cart mt-2">Ajouter au Panier</button>
+                </div>
+
+                <!-- Cart Section -->
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-body">
+                            <h3 class="card-title mb-4 text-primary">Votre Panier</h3>
+                            <ul id="cart" class="list-group mb-3"></ul>
+                            <h4 class="mb-4">Total: <span id="total" class="text-success">0</span> €</h4>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <button id="cancel" class="btn btn-outline-danger mr-2">Annuler Commande</button>
+                                <button id="checkout" class="btn btn-outline-success">Finaliser la Vente</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // Toggle dark mode on and off
+        function toggleDarkMode() {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Toggle light mode on and off
+        function toggleLightMode() {
+            document.body.classList.remove('dark-mode');
+        }
+
+        // DOMContentLoaded event to ensure the DOM is fully loaded before attaching event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            const cart = document.getElementById('cart');
+            const totalDisplay = document.getElementById('total');
+            let total = 0;
+            const items = [];
+
+            // Add to cart functionality
+            document.querySelector('.add-to-cart').addEventListener('click', () => {
+                const companyName = document.getElementById('companyName').value;
+                const productName = document.getElementById('productName').value;
+                const productPrice = parseFloat(document.getElementById('productPrice').value);
+                const quantity = parseInt(document.getElementById('productQuantity').value);
+
+                if (!companyName || !productName || isNaN(productPrice) || productPrice <= 0 || isNaN(quantity) || quantity <= 0) {
+                    alert("Veuillez entrer des informations valides.");
+                    return;
+                }
+
+                // Create and append cart item
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item';
+                listItem.textContent = `${productName} - ${quantity} x ${productPrice.toFixed(2)} € = ${(productPrice * quantity).toFixed(2)} €`;
+                cart.appendChild(listItem);
+
+                // Update total
+                total += productPrice * quantity;
+                totalDisplay.textContent = total.toFixed(2);
+
+                // Add item to items array
+                items.push({
+                    name: productName,
+                    quantity: quantity,
+                    price: productPrice,
+                    total: productPrice * quantity
+                });
+
+                // Reset form fields
+                document.getElementById('productName').value = '';
+                document.getElementById('productPrice').value = '';
+                document.getElementById('productQuantity').value = 1;
+            });
+
+            // Checkout functionality to generate PDF invoice
+            document.getElementById('checkout').addEventListener('click', () => {
+                const companyName = document.getElementById('companyName').value;
+                const companyEmail = document.getElementById('companyEmail').value;
+                const companyPhone = document.getElementById('companyPhone').value;
+                const companyVAT = document.getElementById('companyVAT').value;
+                const invoiceNumber = document.getElementById('invoiceNumber').value;
+                const taxFree = document.getElementById('taxFree').value;
+                const buyerCompany = document.getElementById('buyerCompany').value;
+
+                if (total > 0 && companyName) {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+
+                    // Add company details and invoice info to the PDF
+                    doc.setFontSize(20);
+                    doc.text(companyName, 105, 10, null, null, "center");
+                    doc.setFontSize(12);
+                    doc.text(`Email: ${companyEmail}`, 10, 20);
+                    doc.text(`Phone: ${companyPhone}`, 10, 30);
+                    doc.text(`TVA: ${companyVAT}`, 10, 40);
+                    doc.text(`Facture No: ${invoiceNumber}`, 10, 50);
+                    doc.text(`Détaxe: ${taxFree}`, 10, 60);
+                    doc.text(`Acheteur: ${buyerCompany}`, 10, 70);
+                    doc.text(`Date: ${new Date().toLocaleString()}`, 10, 80);
+                    doc.text("Facture de Vente", 105, 90, null, null, "center");
+
+                    // Add items to the PDF
+                    let yPosition = 100;
+                    items.forEach((item, index) => {
+                        doc.text(`${index + 1}. ${item.name} - ${item.quantity} x ${item.price.toFixed(2)} € = ${item.total.toFixed(2)} €`, 10, yPosition);
+                        yPosition += 10;
+                    });
+
+                    // Add total to the PDF
+                    doc.text(`Total: ${total.toFixed(2)} €`, 10, yPosition + 10);
+                    doc.save("facture.pdf");
+
+                    // Reset cart and total
+                    cart.innerHTML = '';
+                    total = 0;
+                    totalDisplay.textContent = total.toFixed(2);
+                    items.length = 0;
+                } else {
+                    alert('Le panier est vide ou le nom de l\'entreprise est manquant.');
+                }
+            });
+
+            // Cancel functionality to clear cart
+            document.getElementById('cancel').addEventListener('click', () => {
+                cart.innerHTML = '';
+                total = 0;
+                totalDisplay.textContent = total.toFixed(2);
+                items.length = 0;
+            });
+        });
+    </script>
+</body>
+</html>
